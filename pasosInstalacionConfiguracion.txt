@@ -1,0 +1,103 @@
+En este fichero de texto se detallan los pasos seguidos para instalar y configurar Julia para el proyecto en Ubuntu 20.04, incluyendo la instalación de software adicional (solver CPLEX de IBM)
+
+
+
+-> INSTALACIÓN DE JULIA
+
+Instalación de julia como paquete DEB
+-------------------------------------
+[sudo] apt update
+[sudo] apt install julia
+-------------------------------------
+en el momento de la redacción de este fichero, en el repositorio estaba la versión 1.4.1
+
+
+
+-> INSTALACIÓN DEL PAQUETE DE MODELADO DE PROBLEMAS
+
+Ejecutar en un terminal
+-------------------------------------
+julia
+-------------------------------------
+Una vez salga el prompt del intérprete, introducir el caracter ']', y se pasará automáticamente al modo "pkg"
+Una vez en el modo "pkg", ejecutar: 
+--------------------------
+add JuMP
+--------------------------
+Después, cuando se interprete la directiva "using JuMP" de los scripts, se precompilará el paquete
+
+
+
+-> INSTALACIÓN DEL SOLVER CPLEX DE IBM
+
+Primero se crea una cuenta académica con el correo de la universidad
+
+Después, se entra en https://www.ibm.com/analytics/cplex-optimizer
+
+Clickamos en "Try CPLEX Optimization Studio", y nos llevará a una página donde poner nuestras credenciales. Tras ello, aceptamos los términos de licencia y seremos redirigidos a la página de descargas. En ella, elegimos el binario para nuestro sistema y lo descargamos 
+
+En el directorio de la descarga, ejecutamos: 
+--------------------------
+mv <descarga> $HOME
+cd 
+sudo /bin/bash <descarga>
+--------------------------
+y seguimos las instrucciones que nos indica el instalador (en mi caso, la instalación se realizó en "/opt/ibm/ILOG/CPLEX_Studio_Community1210", que es la ruta que venía por defecto)
+
+Después, editamos el fichero "~/.profile", añadiendo lo siguiente: 
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Configuración de entorno para CPLEX
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"/opt/ibm/ILOG/CPLEX_Studio_Community1210/cplex/bin/x86-64_linux"
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+siendo en mi caso ese el path a los binarios de CPLEX, coincidiendo con los que vienen por defecto. En caso de haber escogido otra ruta para la instalación, poner esa
+
+Cargamos los cambios ejecutando: 
+--------------------------
+source ~/.profile
+--------------------------
+
+Ahora volvemos a entrar en el intérprete de Julia, y ejecutamos: 
+--------------------------
+using Pkg
+Pkg.add("CPLEX")
+Pkg.build("CPLEX")
+--------------------------
+Después, cuando se interprete la directiva "using CPLEX" de los scripts, se precompilará el paquete
+
+
+
+-> INSTALACIÓN DE PAQUETES PARA GENERAR GRÁFICAS
+
+Ejecutar en un terminal
+-------------------------------------
+julia
+-------------------------------------
+Una vez salga el prompt del intérprete, introducir el caracter ']', y se pasará automáticamente al modo "pkg"
+Una vez en el modo "pkg", ejecutar: 
+--------------------------
+add Plots
+--------------------------
+Después, cuando se interprete la directiva "using Plots" de los scripts, se precompilará el paquete
+
+No obstante, debido a un bug en Plots, no se puede usar "display()", que sirve para mostrar de forma interactiva un plot cuando éste se genera en un script en vez de hacerse de forma interactiva
+Para solventarlo se puede usar PyPlot como apoyo, que una API en Julia al paquete MatPlotLib de Python, y se instala así: 
+--------------------------
+add PyPlot
+--------------------------
+de forma que si al usar Plots lo hacemos tal que así "using Plots; pyplot()", usaremos implícitamente el backend de matplotlib vía pyplot
+
+
+
+-> INSTALACIÓN DE PAQUETE PARA PERSISTIR VARIABLES
+
+Ejecutar en un terminal
+-------------------------------------
+julia
+-------------------------------------
+Una vez salga el prompt del intérprete, introducir el caracter ']', y se pasará automáticamente al modo "pkg"
+Una vez en el modo "pkg", ejecutar: 
+--------------------------
+add JLD2
+--------------------------
+Después, cuando se interprete la directiva "using JLD2" de los scripts, se precompilará el paquete
+
